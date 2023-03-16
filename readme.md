@@ -154,6 +154,7 @@ The test cases focus is performed on all Http Methods in the `EmployeeController
     - `#shouldGetAllEmployees_andCheckIfFetched_withSuccess()`
     - `#shouldPutEmployee_andCheckIfUpdated_withSuccess()`
     - `#shouldGetOneEmployeeByTextId_andCheckIfFetched_withSuccess()`
+    - `#shouldDeleteEmployee_andCheckIfDeleted_withSuccess()`
 
 3. **Securing the endpoints**
 - Uses OAuth 2.0 to secure the endpoint. It uses in-memory strategy to generate the Bearer token. We define 2 types of scopes for demonstration purposes, which secures and grants access to endpoints according to the scope provided and client credentials. i.e. `employee:write` and `employee:read`.
