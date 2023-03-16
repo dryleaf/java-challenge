@@ -6,6 +6,139 @@
 ## [Begin] Notes
 The objective of this task is to perform refactoring on the source code, determine improvement points and perform such improvements according to best practices.
 
+### Query API
+
+**Token**
+```
+curl -k -X POST -H 'Content-type: application/x-www-form-urlencoded' -u "axa-manager:manager-secret" -d "scope=employee:write&grant_type=client_credentials&username=axa-manager&password=manager-secret" http://localhost:8080/oauth/token
+```
+output:
+```
+{"access_token":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJlbXBsb3llZTp3cml0ZSJdLCJleHAiOjIyNzg5ODI5NDIsImF1dGhvcml0aWVzIjpbIlJPTEVfTUFOQUdFUiJdLCJqdGkiOiJkNDE4YWFiYS1iNjJmLTRkNjktYjRiMi05YzgzYTk3OGRiMzQiLCJjbGllbnRfaWQiOiJheGEtbWFuYWdlciJ9.-azRpbwrHLQTxnZsHv9IxyaUp5LbCBTfTeQg2C4ARRCFLRMC0yD0CH2xsnfJBd2NHH0GYSwf3wZAEHglxBC3ew","token_type":"bearer","expires_in":599999999,"scope":"employee:write","jti":"d418aaba-b62f-4d69-b4b2-9c83a978db34"}
+```
+
+**GET**
+*/api/employees*
+```
+curl --location --request GET 'http://localhost:8080/api/employees' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJlbXBsb3llZTp3cml0ZSJdLCJleHAiOjIyNzg5ODI5NDIsImF1dGhvcml0aWVzIjpbIlJPTEVfTUFOQUdFUiJdLCJqdGkiOiJkNDE4YWFiYS1iNjJmLTRkNjktYjRiMi05YzgzYTk3OGRiMzQiLCJjbGllbnRfaWQiOiJheGEtbWFuYWdlciJ9.-azRpbwrHLQTxnZsHv9IxyaUp5LbCBTfTeQg2C4ARRCFLRMC0yD0CH2xsnfJBd2NHH0GYSwf3wZAEHglxBC3ew' \
+--header 'Content-Type: application/vnd.axa.v1+json'
+```
+output:
+```
+{
+  "_embedded": {
+    "employees": [
+      {
+        "id": 1,
+        "name": "Jane Doe",
+        "salary": 123456,
+        "department": "IT",
+        "_links": {
+          "self": {
+            "href": "http://localhost:8080/api/employees/1"
+          },
+          "employees": {
+            "href": "http://localhost:8080/api/employees"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "name": "John Wick",
+        "salary": 435678,
+        "department": "Special Forces",
+        "_links": {
+          "self": {
+            "href": "http://localhost:8080/api/employees/2"
+          },
+          "employees": {
+            "href": "http://localhost:8080/api/employees"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/employees"
+    }
+  }
+}
+```
+
+*/api/employees/1*
+```
+curl --location --request GET 'http://localhost:8080/api/employees/1' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJlbXBsb3llZTp3cml0ZSJdLCJleHAiOjIyNzg5ODI5NDIsImF1dGhvcml0aWVzIjpbIlJPTEVfTUFOQUdFUiJdLCJqdGkiOiJkNDE4YWFiYS1iNjJmLTRkNjktYjRiMi05YzgzYTk3OGRiMzQiLCJjbGllbnRfaWQiOiJheGEtbWFuYWdlciJ9.-azRpbwrHLQTxnZsHv9IxyaUp5LbCBTfTeQg2C4ARRCFLRMC0yD0CH2xsnfJBd2NHH0GYSwf3wZAEHglxBC3ew' \
+--header 'Content-Type: application/vnd.axa.v1+json'
+```
+output:
+```
+{
+  "id": 1,
+  "name": "Jane Doe",
+  "salary": 123456,
+  "department": "IT",
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/employees/1"
+    },
+    "employees": {
+      "href": "http://localhost:8080/api/employees"
+    }
+  }
+}
+```
+
+**POST**
+*/api/employees*
+```
+curl --location --request POST 'http://localhost:8080/api/employees' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJlbXBsb3llZTp3cml0ZSJdLCJleHAiOjIyNzg5ODI5NDIsImF1dGhvcml0aWVzIjpbIlJPTEVfTUFOQUdFUiJdLCJqdGkiOiJkNDE4YWFiYS1iNjJmLTRkNjktYjRiMi05YzgzYTk3OGRiMzQiLCJjbGllbnRfaWQiOiJheGEtbWFuYWdlciJ9.-azRpbwrHLQTxnZsHv9IxyaUp5LbCBTfTeQg2C4ARRCFLRMC0yD0CH2xsnfJBd2NHH0GYSwf3wZAEHglxBC3ew' \
+--header 'Content-Type: application/vnd.axa.v1+json' \
+--data-raw '{
+    "name": "John Wick",
+    "salary": 435678,
+    "department": "Special Forces"
+}'
+```
+output:
+```
+{
+  "id": 1,
+  "name": "John Wick",
+  "salary": 435678,
+  "department": "Special Forces",
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/employees/3"
+    }
+  }
+}
+```
+
+**PUT**
+*/api/employees/1*
+```
+curl --location --request PUT 'http://localhost:8080/api/employees/1' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJlbXBsb3llZTp3cml0ZSJdLCJleHAiOjIyNzg5ODI5NDIsImF1dGhvcml0aWVzIjpbIlJPTEVfTUFOQUdFUiJdLCJqdGkiOiJkNDE4YWFiYS1iNjJmLTRkNjktYjRiMi05YzgzYTk3OGRiMzQiLCJjbGllbnRfaWQiOiJheGEtbWFuYWdlciJ9.-azRpbwrHLQTxnZsHv9IxyaUp5LbCBTfTeQg2C4ARRCFLRMC0yD0CH2xsnfJBd2NHH0GYSwf3wZAEHglxBC3ew' \
+--header 'Content-Type: application/vnd.axa.v1+json' \
+--data-raw '{
+    "name": "Jane Doe",
+    "salary": 123456,
+    "department": "IT"
+}'
+```
+
+**DELETE**
+*/api/employees/1*
+```
+curl --location --request DELETE 'http://localhost:8080/api/employees/1' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJlbXBsb3llZTp3cml0ZSJdLCJleHAiOjIyNzg5ODI5NDIsImF1dGhvcml0aWVzIjpbIlJPTEVfTUFOQUdFUiJdLCJqdGkiOiJkNDE4YWFiYS1iNjJmLTRkNjktYjRiMi05YzgzYTk3OGRiMzQiLCJjbGllbnRfaWQiOiJheGEtbWFuYWdlciJ9.-azRpbwrHLQTxnZsHv9IxyaUp5LbCBTfTeQg2C4ARRCFLRMC0yD0CH2xsnfJBd2NHH0GYSwf3wZAEHglxBC3ew' \
+--header 'Content-Type: application/vnd.axa.v1+json'
+```
+
 ### Refactoring points
 1. **API Versioning**
 In order to properly consume an API, the client must have prior knowledge of Media Types such as "Accept" or "Content-Type", etc... This is the basis of content negotiation.
